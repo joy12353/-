@@ -1,0 +1,206 @@
+
+import matplotlib.pyplot as plt
+
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier,plot_tree
+from matplotlib.pyplot import plot
+
+#dataset loading
+cancer=load_breast_cancer()
+#random_state: 데이터가 섞여도 상관 없음 / 만약 섞이면 절대 안된다 하면 random_state지정 해야함 
+X_train,X_test,y_train,y_test=train_test_split(cancer.data,cancer.target,stratify=cancer.target,random_state=42)
+
+tree=DecisionTreeClassifier(random_state=42)    #hyperparameter: default
+tree.fit(X_train,y_train)
+print('Train score:',tree.score(X_train,y_train))
+print('Test_score:',tree.score(X_test,y_test))
+
+tree1=DecisionTreeClassifier(max_depth=10,random_state=42)
+tree1.fit(X_train,y_train)
+print('tree1score:',tree1.score(X_test,y_test))
+
+#class_names=['[malignant','benign']
+#plot_tree(tree,feature_names=class_names,filled=True)
+#plt.show()
+
+print('tree feature importances \n',tree.ffeature_importances)
+#\n:개행(enter)
+#\t" tab 키 
+
+def plot_feature_importance_plot(model):
+    n_features=cancer.data.shape[1] #data: rowXcol-> data[1]->col
+    plt.barh(np.arange(n_features),model.feature_importances_,align='center')
+    
+    #Make a horizontal bar plot
+    
+
+tree.score(X_train,y_train) #train 모델을 학습시킨 스코어 
+
+#train_test_split(X,y,test_size) y=\->target
+#DecisionTreeClassifier 호출
+dt_clf=DecisionTreeClassifier(min_samples_leaf=6,random_state=42)
+
+#DecisionTree 학습
+dt_clf.fit(X_train,y_train)
+print(dt_clf.score(X_test,y_test))
+
+#트리를 그려보자 
+
+    #explt_vars=['sepal_length','sepal_width','petal_length','petal_width']
+    #fct_val={0:'setosa',1:'versicolor',2:'virginica'}
+
+    #plot.figure(figsize=(10,8))
+    #plot_tree(dt_clf, feature_names=-explt_vars,class_names=fct_val,filled=True)
+    #plt.show()
+
+import seaborn as sns 
+import numpy as np
+#feature importance 추출 
+print('Feature importance:\n{0}'.format(np.round(dt_clf.feature_importances_,3)))
+
+#feature별 importance mapping 
+for name,value in zip(iris_dataset.feature_names,dt_clf.feature_importances_):
+    print('{0}:{1:.3f}'.format(name,value))
+          
+          
+sns.barplot(x=dt_clf.feature_importances_,y=iris_dataset.features_names)
+plt.show()
+
+😉랜덤 포레스트(Random Forest)
+오늘날 쓰이는 머신 러닝 알고리즘 중에서 가장 강력한 성능을 자랑하는 알고리즘
+
+랜덤 포레스트는 이 중 배깅 방법을 적용한 결정트리(Dicison Tree)의 앙상블
+
+랜덤 포레스트 알고리즘은 결정트리(Dicision Tree) 분류기 여러 개를 훈련시켜서 그 결과들을 가지고 예측을 함. 각각의 결정트리를 훈련시킬 때 배깅(Bagging). 즉, 훈련 세트에서 중복을 허용하여 샘플링한 데이터셋을 개별 결정트리 분류기의 훈련 세트로 하여 훈련시키는 방식.
+
+장점 :
+분류, 회귀에서 가장 널리 쓰이는 알고리즘으로 성능이 좋고 정확도가 높다
+간편하고 빠르다.
+큰 데이터 셋에서도 잘 사용되며, 많은 입력 변수들을 다룰 수 있다.
+단점 :
+속도와 메모리 비용이 상대적(linear에 비해)으로 큼 (더 많은 트리 -> 정확도는 높아지나 시간과 리소스 소모가 큼)
+
+트리 깊이와 개수 설정을 잘못하여 과적합(Overfiting)발생.
+
+랜덤 포레스튼튼 훈련을 통해 구성해 놓은 다수의 의사결정트리들로부터 분류 결과를 취합해서 예측하는 앙상블 모델이라고 할 수 있음.
+코드 실습
+참고 : 파이썬 완벽가이드
+
+배깅(Bagging)
+통계학에서 중복한 허용한 리샘플링(resampling)을 부트스트래핑(boostraping)이라 하고 이와 반대로 중복을 허용하지 않는 샘플링 방식을 페이스팅(pasting)이라고 함.
+ex) 10만개의 데이터 중 7만 5천개의 데이터를 학습데이터로 사용한다고 가정하면
+
+7만 5천개의 데이터를 가지고 여러 데이터 셋으로 나눈다면 학습데이터가 부족해지고 이로인해 모형들이 편향히 생기거나 분산이 커지는 문제가 생길 수 있다.
+
+하지만 배깅의 경우는 복원추출(Resampling)을 하기 때문에 어떤 데이터는 여러번 뽑힐 수 있고 어떤 데이터는 한번도 뽑히지 않을 수도 있다 때문에 75000개의 데이터를 가지고 75000번을 추출해도 75000가지의 서로 다른 샘플데이터를 추출할 수 있게 됨.
+
+이 특성을 이용해 조금씩 다른 모델들을 만들고 그것들의 결과를 취합하는 것이다.
+
+데이터가 비슷하니 결과도 별 차이가 없다고 생각할 수 있지만 데이터가 빼곡해지는 효과가 있고, 조금씩 다른 모델들이 투표를 하는 방식으므로 배깅으로 만들어진 앙상블 모델은 결과들에 대한 편차가 크지 않고 안정적인 결과를 보여지도록 향상됨.
+
+학습데이터가 원래 편향이 있다면 그로 인한 편향문제까지는 해결하지 못하지만 미지의 데이터(Unseen data)에 상당히 괜찮은 성능을 보이고 노이즈나 아웃라이어에 대해서도 강해지는 것으로 알려져 있음.
+
+출처 : https://eunsukimme.github.io/ml/2019/11/26/Random-Forest/
+
+이 의사결정나무들은 모두 같은 의사결정나무일 수가 없다
+
+Bootstrap으로 샘플을 추출했기 때문에, 어느 정도의 중복과 함께 각기 다른 샘플로 의사 결정나무 모델을 만들었다고 할 수 있다.
+
+Hyperparameter
+n_estimators: 랜덤 포레스트 안의 결정 트리 갯수
+
+n_estimators는 클수록 좋습니다.
+결정 트리가 많을수록 더 깔끔한 Decision Boundary가 나오겠죠.
+하지만 그만큼 메모리와 훈련 시간이 증가합니다. Default는 10입니다.
+max_features: 무작위로 선택할 Feature의 개수
+max_features=n_features이면 30개의 feature 중 30개의 feature 모두를 선택해 결정 트리를 만듭니다. 단, bootstrap=True이면 30개의 feature에서 복원 추출로 30개를 뽑습니다.
+
+특성 선택의 무작위성이 없어질 뿐 샘플링의 무작위성은 그대로인 것입니다.
+bootstrap=True는 default 값입니다.
+따라서 max_features 값이 크다면 랜덤 포레스트의 트리들이 매우 비슷해지고, 가장 두드러진 특성에 맞게 예측을 할 것입니다.
+max_features 값이 작다면 랜덤 포레스트의 트리들이 서로 매우 달라질 것입니다. 따라서 오버피팅이 줄어들 것입니다.
+max_features는 일반적으로 Defalut 값을 씁니다.
+max_depth : 트리의 깊이를 뜻합니다.
+
+min_samples_leaf : 리프노드가 되기 위한 최소한의 샘플 데이터 수 입니다.
+
+min_samples_split : 노드를 분할하기 위한 최소한의 데이터 수 입니다.
+
+max_leaf_nodes : 리프노드의 최대 개수
+
+from sklearn.ensemble import RandomForestClassifier
+
+from sklearn.datasets import make_moons
+
+from sklearn.model_selection import train_test_split
+
+
+
+x, y = make_moons(n_samples=100, noise=0.25, random_state=3) # noise: Standard deviation of Gaussian noise added to the data.
+
+
+
+x_train, x_test, y_train, y_test = train_test_split(x, y, stratify=y, random_state=42)
+
+
+
+forest = RandomForestClassifier(n_estimators=5, n_jobs=-1, random_state=42) # n_estimators: 사용할 tree수
+
+forest.fit(x_train, y_train)
+
+
+
+import matplotlib.pyplot as plt
+
+import numpy as np
+
+from mglearn.plots import plot_2d_classification
+
+
+
+_, axes = plt.subplots(2, 3)
+
+marker_set = ['o', '^']
+
+
+
+for i, (axe, tree) in enumerate(zip(axes.ravel(), forest.estimators_)):
+
+    axe.set_title('tree {}'.format(i))
+
+    plot_2d_classification(tree, x, fill=True, ax=axe, alpha=0.4)
+
+
+
+    for i, m in zip(np.unique(y), marker_set):
+
+        axe.scatter(x[y==i][:, 0], x[y==i][:, 1], marker=m,
+
+                    label='class {}'.format(i), edgecolors='k')
+
+        axe.set_xlabel('feature 0')
+
+        axe.set_ylabel('feature 1')
+
+
+
+axes[-1, -1].set_title('random forest')
+
+axes[-1, -1].set_xlabel('feature 0')
+
+axes[-1, -1].set_ylabel('feature 1')
+
+plot_2d_classification(forest, x, fill=True, ax=axes[-1, -1], alpha=0.4)
+
+
+
+for i, m in zip(np.unique(y), marker_set):
+
+    plt.scatter(x[y==i][:, 0], x[y==i][:, 1], marker=m,
+
+                label='class {}'.format(i), edgecolors='k')
+
+plt.show()
+
+
